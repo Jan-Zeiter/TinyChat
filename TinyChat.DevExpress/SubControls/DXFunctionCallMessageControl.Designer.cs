@@ -20,6 +20,7 @@ partial class DXFunctionCallMessageControl
 
 	private void InitializeComponent()
 	{
+		lblSender = new LabelControl();
 		lblToolIcon = new LabelControl();
 		lblResultIcon = new LabelControl();
 		lblTitle = new LabelControl();
@@ -30,6 +31,13 @@ partial class DXFunctionCallMessageControl
 		tablePanel.SuspendLayout();
 		paddingPanel.SuspendLayout();
 		SuspendLayout();
+
+		// lblSender
+		lblSender.AutoSizeMode = LabelAutoSizeMode.Vertical;
+		lblSender.Dock = DockStyle.Top;
+		lblSender.Appearance.Font = new Font(Font, FontStyle.Bold);
+		lblSender.UseMnemonic = false;
+		lblSender.Padding = new Padding(3, 0, 0, 3);
 
 		// _callIconLabel
 		lblToolIcon.AutoSize = false;
@@ -107,7 +115,9 @@ partial class DXFunctionCallMessageControl
 		// DXFunctionCallMessageControl
 		AutoSize = true;
 		BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+		Controls.Add(lblSender);
 		Controls.Add(paddingPanel);
+		paddingPanel.BringToFront();
 		Cursor = Cursors.Hand;
 		Padding = new Padding(3, 0, 0, 0);
 		Click += Toggle;
@@ -127,6 +137,7 @@ partial class DXFunctionCallMessageControl
 		PerformLayout();
 	}
 
+	private LabelControl lblSender;
 	private TableLayoutPanel tablePanel;
 	private LabelControl lblToolIcon;
 	private LabelControl lblTitle;

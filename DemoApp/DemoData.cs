@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.DependencyInjection;
 using TinyChat;
 using TinyChat.Messages;
 
@@ -12,17 +14,30 @@ public class DemoData
 {
 	public static string AssistantName { get; set; } = "Assistant";
 
+	/// <summary>
+	/// Creates a <see cref="IServiceProvider"/> with a <see cref="DemoChatClient"/> that
+	/// simulates interleaved reasoning, tool calls, and text without a real LLM backend.
+	/// </summary>
+	public static IServiceProvider CreateDemoServiceProvider()
+	{
+		var services = new ServiceCollection();
+		services.AddChatClient(new DemoChatClient());
+		return services.BuildServiceProvider();
+	}
+
 	public static IEnumerable<DemoChatMessage> Create(string currentUser)
 	{
-		var arguments = new Dictionary<string, object?> { ["city"] = "Stuttgart", ["unit"] = "Celsius" };
-
 		return [
-			new DemoChatMessage(AssistantName,"How can I help you today?"),
-			new DemoChatMessage(Environment.UserName, "How is the weather in Stuttgart, DE?"),
-			new DemoChatMessage("assistant", new ReasoningMessageContent("The user want's to know the weather in Stuttgart, Germany.").SetDone()),
-			new DemoChatMessage("tool", new FunctionCallMessageContent("weather1", "get_weather", arguments, "26°C, sunny, no clouds")),
-			new DemoChatMessage(AssistantName,"The weather in Stuttgart is sunny at 26°C.")
-			];
+			new DemoChatMessage(AssistantName, "Hi! I'm your AI Research Assistant. Ask me anything \u2014 I'll search my knowledge base and verify facts for you. \U0001F52C"),
+			new DemoChatMessage(currentUser, "What is the Transformer architecture in AI?"),
+			new DemoChatMessage(AssistantName, new ReasoningMessageContent("The user wants to know about the Transformer architecture. I should search for a concise and accurate explanation from reliable sources.").SetDone()),
+			new DemoChatMessage(AssistantName, "Great question! Let me research that for you."),
+			new DemoChatMessage(AssistantName, new FunctionCallMessageContent("call_1", "search_knowledge_base", new Dictionary<string, object?> { ["query"] = "Transformer architecture AI deep learning" }, "Found: The Transformer is a deep learning architecture introduced in 'Attention Is All You Need' (Vaswani et al., 2017), based entirely on self-attention mechanisms.")),
+			new DemoChatMessage(AssistantName, "I found some relevant information. "),
+			new DemoChatMessage(AssistantName, new ReasoningMessageContent("Good results. Let me verify the claim about the publication year and the key innovation of self-attention.").SetDone()),
+			new DemoChatMessage(AssistantName, new FunctionCallMessageContent("call_2", "verify_facts", new Dictionary<string, object?> { ["claim"] = "Transformers introduced in 2017", ["sources"] = "academic papers" }, "Confirmed: Published by Vaswani et al. at NeurIPS 2017. Self-attention is the core innovation.")),
+			new DemoChatMessage(AssistantName, "The **Transformer** is a neural network architecture introduced in the landmark paper \"Attention Is All You Need\" (Vaswani et al., 2017). Unlike its predecessors (RNNs, LSTMs), it relies entirely on **self-attention mechanisms**, allowing it to process sequences in parallel rather than sequentially.\n\nToday, Transformers power virtually all modern large language models including GPT, BERT, LLaMA, and many more.\n\nWould you like me to dive deeper into any specific aspect? \U0001F50D"),
+		];
 	}
 
 	/// <summary>

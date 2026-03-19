@@ -24,10 +24,23 @@ public static class OllamaDemo
 	public static async Task<IServiceProvider> CreateServiceProviderWithOllamaChatClientAsync(
 		IProgress<string>? progress = null,
 		CancellationToken cancellationToken = default)
-	{
-		var ollamaClient = new OllamaApiClient(new Uri("http://localhost:11434"), MODELNAME);
+		=> await CreateServiceProviderWithOllamaChatClientAsync(MODELNAME, progress, cancellationToken);
 
-		await EnsureModelAvailableAsync(ollamaClient, progress, cancellationToken);
+	/// <summary>
+	/// Creates a service provider backed by a real Ollama IChatClient with function invocation enabled.
+	/// The model is pulled automatically if it is not yet available locally.
+	/// </summary>
+	/// <param name="modelName">The Ollama model name to use.</param>
+	/// <param name="progress">Optional progress reporter for status messages.</param>
+	/// <param name="cancellationToken">Token to cancel the operation.</param>
+	public static async Task<IServiceProvider> CreateServiceProviderWithOllamaChatClientAsync(
+		string modelName,
+		IProgress<string>? progress = null,
+		CancellationToken cancellationToken = default)
+	{
+		var ollamaClient = new OllamaApiClient(new Uri("http://localhost:11434"), modelName);
+
+		await EnsureModelAvailableAsync(ollamaClient, modelName, progress, cancellationToken);
 
 		var services = new ServiceCollection();
 
@@ -51,28 +64,42 @@ public static class OllamaDemo
 
 	private static async Task EnsureModelAvailableAsync(
 		OllamaApiClient client,
+		string modelName,
 		IProgress<string>? progress,
 		CancellationToken cancellationToken)
 	{
 		var models = await client.ListLocalModelsAsync(cancellationToken);
-		var isAvailable = models.Any(m => m.Name.StartsWith(MODELNAME, StringComparison.OrdinalIgnoreCase));
+		var isAvailable = models.Any(m => m.Name.StartsWith(modelName, StringComparison.OrdinalIgnoreCase));
 
 		if (!isAvailable)
 		{
-			progress?.Report($"Model '{MODELNAME}' not found locally. Downloading...");
+			progress?.Report($"Model '{modelName}' not found locally. Downloading...");
 
-			await foreach (var status in client.PullModelAsync(MODELNAME, cancellationToken))
+			await foreach (var status in client.PullModelAsync(modelName, cancellationToken))
 			{
 				if (!string.IsNullOrWhiteSpace(status?.Status))
 					progress?.Report(status.Status);
 			}
 
-			progress?.Report($"Model '{MODELNAME}' is ready.");
+			progress?.Report($"Model '{modelName}' is ready.");
 		}
 		else
 		{
-			progress?.Report($"Model '{MODELNAME}' is available.");
+			progress?.Report($"Model '{modelName}' is available.");
 		}
+	}
+
+	/// <summary>
+	/// Returns the names of all locally available Ollama models, sorted alphabetically.
+	/// </summary>
+	public static async Task<string[]> ListLocalModelNamesAsync(CancellationToken cancellationToken = default)
+	{
+		var ollamaClient = new OllamaApiClient(new Uri("http://localhost:11434"));
+		var models = await ollamaClient.ListLocalModelsAsync(cancellationToken);
+		return models
+			.Select(m => m.Name)
+			.OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
+			.ToArray();
 	}
 
 	[Description("Gets the current local date and time.")]

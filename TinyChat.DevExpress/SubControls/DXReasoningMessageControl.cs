@@ -70,6 +70,7 @@ internal sealed partial class DXReasoningMessageControl : PanelControl, IChatMes
 		set
 		{
 			_message = value;
+			lblSender.Text = _message?.Sender?.Name ?? string.Empty;
 
 			lblDetail.DataBindings.Clear();
 			lblTitle.DataBindings.Clear();
@@ -146,6 +147,12 @@ internal sealed partial class DXReasoningMessageControl : PanelControl, IChatMes
 	void IChatMessageControl.SetIsReceivingStream(bool isReceiving)
 	{
 		_isReceivingStream = isReceiving;
+	}
+
+	/// <inheritdoc/>
+	void IChatMessageControl.ShowSenderHeader(bool show)
+	{
+		lblSender.Visible = show;
 	}
 
 	/// <inheritdoc/>

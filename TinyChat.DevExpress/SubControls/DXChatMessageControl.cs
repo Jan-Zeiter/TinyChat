@@ -114,6 +114,12 @@ public class DXChatMessageControl : PanelControl, IChatMessageControl
 		_isReceivingStream = isReceiving;
 	}
 
+	/// <inheritdoc />
+	void IChatMessageControl.ShowSenderHeader(bool show)
+	{
+		_senderLabel.Visible = show;
+	}
+
 	/// <inheritdoc/>
 	public override string ToString() => _messageLabel.Text;
 }

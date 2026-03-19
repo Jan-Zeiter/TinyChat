@@ -407,6 +407,10 @@ public partial class ChatControl : UserControl
 			messageControl = CreateMessageControl(message);
 
 		messageControl.Message = message;
+
+		if (IsContinuationMessage(message))
+			messageControl.ShowSenderHeader(false);
+
 		var control = (Control)messageControl;
 
 		if (MessageHistoryControl is IChatMessageHistoryControl casted)
@@ -416,6 +420,23 @@ public partial class ChatControl : UserControl
 		}
 
 		return messageControl;
+	}
+
+	/// <summary>
+	/// Determines whether the specified message is a continuation of the immediately
+	/// preceding message from the same sender. Continuation messages should not display
+	/// the sender header, regardless of content type.
+	/// </summary>
+	/// <param name="message">The message to evaluate.</param>
+	/// <returns><see langword="true"/> if the message is a continuation; otherwise, <see langword="false"/>.</returns>
+	protected virtual bool IsContinuationMessage(IChatMessage message)
+	{
+		var index = _messages.IndexOf(message);
+		if (index <= 0)
+			return false;
+
+		var prev = _messages[index - 1];
+		return string.Equals(prev.Sender?.Name, message.Sender?.Name, StringComparison.Ordinal);
 	}
 
 	/// <summary>
@@ -780,6 +801,7 @@ public partial class ChatControl : UserControl
 		var pendingCalls = new Dictionary<string, FunctionCallMessageContent>();
 		var textChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
 		var textStreamStarted = false;
+		var hadNonTextContentSinceLastText = false;
 
 		// this is usually done in AddStreamingMessage() but in this case has been done before to include thinking and tool calls
 		// calling SetIsReceivingStream() with true and false twice each does not bother
@@ -809,6 +831,8 @@ public partial class ChatControl : UserControl
 
 						pendingCalls[funcCall.CallId] = content;
 
+						hadNonTextContentSinceLastText = true;
+
 						// reset the reasoning to be able to start a new control
 						reasoningMessageContent?.SetDone();
 						reasoningMessageContent = null;
@@ -820,6 +844,8 @@ public partial class ChatControl : UserControl
 							pendingCalls.Remove(funcResult.CallId);
 							content.SetResult(funcResult.Result);
 						}
+
+						hadNonTextContentSinceLastText = true;
 
 						// reset the reasoning to be able to start a new control
 						reasoningMessageContent?.SetDone();
@@ -838,6 +864,8 @@ public partial class ChatControl : UserControl
 							{
 								reasoningMessageContent.AppendText(reasoningContent.Text);
 							}
+
+							hadNonTextContentSinceLastText = true;
 						}
 					}
 					else
@@ -850,12 +878,23 @@ public partial class ChatControl : UserControl
 
 				if (!string.IsNullOrEmpty(update.Text))
 				{
+					// When text arrives after non-text content (tool calls, reasoning),
+					// complete the current text channel and start a new one so the
+					// continuation text appears below the non-text controls.
+					if (textStreamStarted && hadNonTextContentSinceLastText)
+					{
+						textChannel.Writer.TryComplete();
+						textChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = true });
+						textStreamStarted = false;
+					}
+
 					if (!textStreamStarted)
 					{
 						if (cancellationToken.IsCancellationRequested)
 							break;
 
 						textStreamStarted = true;
+						hadNonTextContentSinceLastText = false;
 						AddStreamingMessage(sender, textChannel.Reader.ReadAllAsync(cancellationToken), cancellationToken: cancellationToken);
 					}
 					textChannel.Writer.TryWrite(update.Text);

@@ -49,7 +49,6 @@ namespace DemoApp
 			chatControl.Name = "chatControl";
 			chatControl.Size = new Size(313, 628);
 			chatControl.TabIndex = 0;
-			chatControl.MessageSent += ChatControl_MessageSent;
 			// 
 			// splitContainer
 			// 

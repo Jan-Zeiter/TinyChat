@@ -20,4 +20,12 @@ public interface IChatMessageControl
 	/// </summary>
 	/// <param name="isReceiving">The flag specifying whether a stream is being received or not</param>
 	void SetIsReceivingStream(bool isReceiving);
+
+	/// <summary>
+	/// Sets whether the sender header should be visible.
+	/// Use this to hide the sender header for continuation messages that follow
+	/// non-text content (like tool calls) from the same sender.
+	/// </summary>
+	/// <param name="show"><see langword="true"/> to show the sender header; <see langword="false"/> to hide it.</param>
+	void ShowSenderHeader(bool show);
 }

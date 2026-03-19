@@ -33,10 +33,12 @@ namespace DemoApp
 			chatControl = new DXChatControl();
 			topPanel = new DevExpress.XtraEditors.PanelControl();
 			newChatButton = new DevExpress.XtraEditors.SimpleButton();
+			modelComboBox = new DevExpress.XtraEditors.ComboBoxEdit();
 			streamingCheckEdit = new DevExpress.XtraEditors.CheckEdit();
 			statusLabel = new DevExpress.XtraEditors.LabelControl();
 			((System.ComponentModel.ISupportInitialize)topPanel).BeginInit();
 			topPanel.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)modelComboBox.Properties).BeginInit();
 			((System.ComponentModel.ISupportInitialize)streamingCheckEdit.Properties).BeginInit();
 			SuspendLayout();
 			//
@@ -55,6 +57,7 @@ namespace DemoApp
 			//
 			topPanel.BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
 			topPanel.Controls.Add(newChatButton);
+			topPanel.Controls.Add(modelComboBox);
 			topPanel.Controls.Add(streamingCheckEdit);
 			topPanel.Controls.Add(statusLabel);
 			topPanel.Dock = System.Windows.Forms.DockStyle.Top;
@@ -73,6 +76,17 @@ namespace DemoApp
 			newChatButton.Text = "New Chat";
 			newChatButton.Click += NewChatButton_Click;
 			newChatButton.Visible = false;
+			//
+			// modelComboBox
+			//
+			modelComboBox.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+			modelComboBox.Location = new System.Drawing.Point(188, 29);
+			modelComboBox.Name = "modelComboBox";
+			modelComboBox.Properties.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+			modelComboBox.Size = new System.Drawing.Size(188, 20);
+			modelComboBox.TabIndex = 3;
+			modelComboBox.Visible = false;
+			modelComboBox.SelectedIndexChanged += ModelComboBox_SelectedIndexChanged;
 			//
 			// streamingCheckEdit
 			//
@@ -105,6 +119,7 @@ namespace DemoApp
 			Text = "TinyChat - Ollama Demo (DevExpress)";
 			topPanel.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)topPanel).EndInit();
+			((System.ComponentModel.ISupportInitialize)modelComboBox.Properties).EndInit();
 			((System.ComponentModel.ISupportInitialize)streamingCheckEdit.Properties).EndInit();
 			ResumeLayout(false);
 		}
@@ -115,6 +130,7 @@ namespace DemoApp
 		private DevExpress.XtraEditors.PanelControl topPanel;
 		private DevExpress.XtraEditors.LabelControl statusLabel;
 		private DevExpress.XtraEditors.CheckEdit streamingCheckEdit;
+		private DevExpress.XtraEditors.ComboBoxEdit modelComboBox;
 		private DevExpress.XtraEditors.SimpleButton newChatButton;
 	}
 }

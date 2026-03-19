@@ -65,6 +65,7 @@ internal partial class ReasoningMessageControl : Panel, IChatMessageControl
 		set
 		{
 			_message = value;
+			lblSender.Text = _message?.Sender?.Name ?? string.Empty;
 
 			lblDetail.DataBindings.Clear();
 			lblHeader.DataBindings.Clear();
@@ -141,6 +142,12 @@ internal partial class ReasoningMessageControl : Panel, IChatMessageControl
 	void IChatMessageControl.SetIsReceivingStream(bool isReceiving)
 	{
 		_isReceivingStream = isReceiving;
+	}
+
+	/// <inheritdoc/>
+	void IChatMessageControl.ShowSenderHeader(bool show)
+	{
+		lblSender.Visible = show;
 	}
 
 	/// <inheritdoc/>

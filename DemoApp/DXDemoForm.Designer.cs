@@ -60,7 +60,6 @@ namespace DemoApp
 			dxChatControl.Name = "dxChatControl";
 			dxChatControl.Size = new System.Drawing.Size(336, 643);
 			dxChatControl.TabIndex = 1;
-			dxChatControl.MessageSent += DxChatControl_MessageSent;
 			// 
 			// splitMain
 			// 

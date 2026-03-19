@@ -13,12 +13,20 @@ partial class ReasoningMessageControl
 
 	private void InitializeComponent()
 	{
+		lblSender = new Label();
 		lblIcon = new Label();
 		lblHeader = new Label();
 		lblDetail = new Label();
 		tableLayout = new TableLayoutPanel();
 		tableLayout.SuspendLayout();
 		SuspendLayout();
+
+		// lblSender
+		lblSender.AutoSize = true;
+		lblSender.Dock = DockStyle.Top;
+		lblSender.Font = new Font(Font, FontStyle.Bold);
+		lblSender.UseMnemonic = false;
+		lblSender.Padding = new Padding(8, 8, 0, 3);
 
 		// lblIcon
 		lblIcon.AutoSize = false;
@@ -76,7 +84,9 @@ partial class ReasoningMessageControl
 		Cursor = Cursors.Hand;
 		Margin = new Padding(3);
 		Padding = new Padding(0);
+		Controls.Add(lblSender);
 		Controls.Add(tableLayout);
+		tableLayout.BringToFront();
 		Click += Toggle;
 		tableLayout.Click += Toggle;
 		lblIcon.Click += Toggle;
@@ -89,6 +99,7 @@ partial class ReasoningMessageControl
 		PerformLayout();
 	}
 
+	private Label lblSender;
 	private TableLayoutPanel tableLayout;
 	private Label lblIcon;
 	private Label lblHeader;

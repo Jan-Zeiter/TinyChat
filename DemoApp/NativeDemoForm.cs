@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Windows.Forms;
 using TinyChat;
 
@@ -37,6 +36,7 @@ public partial class NativeDemoForm : Form, IMessageFilter
 
 		chatControl.IncludeFunctionCalls = true;
 		chatControl.IncludeReasoning = true;
+		chatControl.ServiceProvider = DemoData.CreateDemoServiceProvider();
 		chatControl.Messages = DemoData.Create(Environment.UserName);
 		SelectControl(chatControl);
 	}
@@ -99,10 +99,5 @@ public partial class NativeDemoForm : Form, IMessageFilter
 		typeLabel.Text = control?.GetType().Name ?? "";
 	}
 
-	private void ChatControl_MessageSent(object sender, MessageSentEventArgs e)
-	{
-		var cts = new CancellationTokenSource();
-		chatControl.AddStreamingMessage(new NamedSender(DemoData.AssistantName), DemoData.StreamAiAnswerWithFunctionCalls(e.Content, isDevExpress: false, cts.Token), cancellationToken: cts.Token);
 	}
-}
 

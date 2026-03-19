@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Windows.Forms;
 using DevExpress.LookAndFeel;
 using DevExpress.XtraBars.ToolbarForm;
@@ -44,6 +43,7 @@ public partial class DXDemoForm : ToolbarForm, IMessageFilter
 
 		dxChatControl.IncludeFunctionCalls = true;
 		dxChatControl.IncludeReasoning = true;
+		dxChatControl.ServiceProvider = DemoData.CreateDemoServiceProvider();
 		dxChatControl.Messages = DemoData.Create(Environment.UserName);
 		SelectControl(dxChatControl);
 	}
@@ -110,9 +110,5 @@ public partial class DXDemoForm : ToolbarForm, IMessageFilter
 		typeLabelControl.Text = control?.GetType().Name ?? "";
 	}
 
-	private void DxChatControl_MessageSent(object sender, MessageSentEventArgs e)
-	{
-		var cts = new CancellationTokenSource();
-		dxChatControl.AddStreamingMessage(new NamedSender(DemoData.AssistantName), DemoData.StreamAiAnswerWithFunctionCalls(e.Content, isDevExpress: true, cts.Token), cancellationToken: cts.Token);
 	}
-}
+

@@ -49,6 +49,12 @@ internal sealed partial class DXFunctionCallMessageControl : PanelControl, IChat
 	/// <remarks>Tool call messages are never streamed, so this method is intentionally a no-op.</remarks>
 	void IChatMessageControl.SetIsReceivingStream(bool isReceiving) { }
 
+	/// <inheritdoc/>
+	void IChatMessageControl.ShowSenderHeader(bool show)
+	{
+		lblSender.Visible = show;
+	}
+
 	/// <summary>
 	/// Initialises a new instance of <see cref="DXFunctionCallMessageControl"/>.
 	/// </summary>
@@ -88,6 +94,7 @@ internal sealed partial class DXFunctionCallMessageControl : PanelControl, IChat
 				oldFc.PropertyChanged -= OnContentPropertyChanged;
 
 			_message = value;
+			lblSender.Text = _message?.Sender?.Name ?? string.Empty;
 
 			// Subscribe to the new content so we redraw when IsFunctionExecuting
 			// or Result changes (raised by FunctionCallMessageContent.SetResult).

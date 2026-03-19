@@ -20,6 +20,7 @@ partial class DXReasoningMessageControl
 
 	private void InitializeComponent()
 	{
+		lblSender = new LabelControl();
 		lblIcon = new LabelControl();
 		lblTitle = new LabelControl();
 		lblDetail = new LabelControl();
@@ -28,6 +29,13 @@ partial class DXReasoningMessageControl
 		tableLayout.SuspendLayout();
 		paddingPanel.SuspendLayout();
 		SuspendLayout();
+
+		// lblSender
+		lblSender.AutoSizeMode = LabelAutoSizeMode.Vertical;
+		lblSender.Dock = DockStyle.Top;
+		lblSender.Appearance.Font = new Font(Font, FontStyle.Bold);
+		lblSender.UseMnemonic = false;
+		lblSender.Padding = new Padding(3, 0, 0, 3);
 
 		// lblDetail
 		lblIcon.AutoSize = false;
@@ -90,7 +98,9 @@ partial class DXReasoningMessageControl
 		// DXReasoningMessageControl
 		AutoSize = true;
 		BorderStyle = DevExpress.XtraEditors.Controls.BorderStyles.NoBorder;
+		Controls.Add(lblSender);
 		Controls.Add(paddingPanel);
+		paddingPanel.BringToFront();
 		Cursor = Cursors.Hand;
 		Padding = new Padding(3, 0, 0, 0);
 		Click += Toggle;
@@ -108,6 +118,7 @@ partial class DXReasoningMessageControl
 		PerformLayout();
 	}
 
+	private LabelControl lblSender;
 	private TableLayoutPanel tableLayout;
 	private LabelControl lblIcon;
 	private LabelControl lblTitle;

@@ -10,12 +10,14 @@ namespace DemoApp;
 /// </summary>
 public partial class DXOllamaDemoForm : XtraForm
 {
+	private string _selectedModel = OllamaDemo.MODELNAME;
+
 	public DXOllamaDemoForm()
 	{
 		InitializeComponent();
 		Text = $"TinyChat – Ollama DevExpress Demo";
-		statusLabel.Text = $"Connecting to Ollama and loading model '{OllamaDemo.MODELNAME}'…";
-		chatControl.AssistantSenderName = OllamaDemo.MODELNAME;
+		statusLabel.Text = $"Connecting to Ollama and loading model '{_selectedModel}'…";
+		chatControl.AssistantSenderName = _selectedModel;
 		chatControl.ChatOptions = OllamaDemo.CreateChatOptions();
 		_ = InitializeOllamaAsync();
 	}
@@ -30,8 +32,21 @@ public partial class DXOllamaDemoForm : XtraForm
 		chatControl.Messages = [];
 	}
 
+	private void ModelComboBox_SelectedIndexChanged(object? sender, EventArgs e)
+	{
+		if (modelComboBox.SelectedItem is string model && !string.Equals(model, _selectedModel, StringComparison.Ordinal))
+		{
+			_selectedModel = model;
+			chatControl.Messages = [];
+			chatControl.AssistantSenderName = _selectedModel;
+			_ = InitializeOllamaAsync();
+		}
+	}
+
 	private async Task InitializeOllamaAsync()
 	{
+		chatControl.Enabled = false;
+
 		var progress = new Progress<string>(msg =>
 		{
 			if (statusLabel.IsHandleCreated)
@@ -40,21 +55,45 @@ public partial class DXOllamaDemoForm : XtraForm
 
 		try
 		{
-			var serviceProvider = await OllamaDemo.CreateServiceProviderWithOllamaChatClientAsync(progress);
+			var serviceProvider = await OllamaDemo.CreateServiceProviderWithOllamaChatClientAsync(_selectedModel, progress);
 
 			chatControl.Invoke(() =>
 			{
 				chatControl.ServiceProvider = serviceProvider;
 				chatControl.Enabled = true;
-				statusLabel.Text = $"Model '{OllamaDemo.MODELNAME}' ready. Ask about the time or weather!";
+				statusLabel.Text = $"Model '{_selectedModel}' ready. Ask about the time or weather!";
 				streamingCheckEdit.Visible = true;
 				newChatButton.Visible = true;
 			});
+
+			await LoadModelListAsync();
 		}
 		catch (Exception ex)
 		{
 			statusLabel.Invoke(() =>
 				statusLabel.Text = $"Error: {ex.Message} — make sure Ollama is running on http://localhost:11434");
+		}
+	}
+
+	private async Task LoadModelListAsync()
+	{
+		if (modelComboBox.Properties.Items.Count > 0)
+			return;
+
+		try
+		{
+			var models = await OllamaDemo.ListLocalModelNamesAsync();
+
+			modelComboBox.Invoke(() =>
+			{
+				modelComboBox.Properties.Items.AddRange(models);
+				modelComboBox.SelectedItem = _selectedModel;
+				modelComboBox.Visible = true;
+			});
+		}
+		catch
+		{
+			// Model list is optional — ignore errors silently.
 		}
 	}
 }

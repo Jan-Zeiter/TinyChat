@@ -34,6 +34,7 @@ namespace DemoApp
 		{
 			topPanel = new Panel();
 			newChatButton = new Button();
+			modelComboBox = new ComboBox();
 			streamingCheckBox = new CheckBox();
 			statusLabel = new Label();
 			chatControl = new ChatControl();
@@ -44,6 +45,7 @@ namespace DemoApp
 			// 
 			topPanel.BackColor = SystemColors.Control;
 			topPanel.Controls.Add(newChatButton);
+			topPanel.Controls.Add(modelComboBox);
 			topPanel.Controls.Add(streamingCheckBox);
 			topPanel.Controls.Add(statusLabel);
 			topPanel.Dock = DockStyle.Top;
@@ -62,6 +64,17 @@ namespace DemoApp
 			newChatButton.Text = "New Chat";
 			newChatButton.Click += NewChatButton_Click;
 			newChatButton.Visible = false;
+			// 
+			// modelComboBox
+			// 
+			modelComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+			modelComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			modelComboBox.Location = new Point(188, 29);
+			modelComboBox.Name = "modelComboBox";
+			modelComboBox.Size = new Size(188, 23);
+			modelComboBox.TabIndex = 3;
+			modelComboBox.Visible = false;
+			modelComboBox.SelectedIndexChanged += ModelComboBox_SelectedIndexChanged;
 			// 
 			// streamingCheckBox
 			// 
@@ -113,6 +126,7 @@ namespace DemoApp
 		private Panel topPanel;
 		private Label statusLabel;
 		private CheckBox streamingCheckBox;
+		private ComboBox modelComboBox;
 		private Button newChatButton;
 		private ChatControl chatControl;
 	}
