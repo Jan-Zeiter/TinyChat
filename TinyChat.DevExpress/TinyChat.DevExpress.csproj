@@ -21,7 +21,6 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>chat;winforms;devexpress;llm;openai;ai;streaming;ichatclient</PackageTags>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <Version>2.2.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
