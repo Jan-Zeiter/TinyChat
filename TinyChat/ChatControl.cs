@@ -743,6 +743,7 @@ public partial class ChatControl : UserControl
 	/// - Messages from the current <see cref="Sender"/> or the environment username are treated as User messages
 	/// - Messages from the <see cref="AssistantSenderName"/> or containing "Assistant" are treated as Assistant messages
 	/// - All other messages are treated as Assistant messages by default
+	/// Function call messages are converted to structured FunctionCallContent and FunctionResultContent.
 	/// Override this method to customize role determination logic.
 	/// </remarks>
 	protected virtual List<Microsoft.Extensions.AI.ChatMessage> ConvertToChatMessages()
@@ -751,13 +752,42 @@ public partial class ChatControl : UserControl
 
 		foreach (var message in _messages)
 		{
-			var content = message.Content?.Content?.ToString() ?? string.Empty;
 			var senderName = message.Sender?.Name ?? "User";
 
-			// Determine the role based on sender name
-			var role = DetermineChatRole(senderName);
+			// Handle function call messages separately to preserve structured tool call data
+			if (message.Content is FunctionCallMessageContent funcCallContent)
+			{
+				// Convert IReadOnlyDictionary to IDictionary for FunctionCallContent
+				IDictionary<string, object?>? arguments = funcCallContent.Arguments is not null
+					? new Dictionary<string, object?>(funcCallContent.Arguments)
+					: null;
 
-			result.Add(new Microsoft.Extensions.AI.ChatMessage(role, content));
+				// Add the function call from the assistant
+				var functionCallMessage = new Microsoft.Extensions.AI.ChatMessage(
+					ChatRole.Assistant,
+					[new FunctionCallContent(funcCallContent.CallId, funcCallContent.Name, arguments)]
+				);
+				result.Add(functionCallMessage);
+
+				// If there's a result, add it as a tool response
+				// This ensures exceptions and errors are properly communicated back to the model
+				if (funcCallContent.Result is not null)
+				{
+					var functionResultMessage = new Microsoft.Extensions.AI.ChatMessage(
+						ChatRole.Tool,
+						[new FunctionResultContent(funcCallContent.CallId, funcCallContent.Result)]
+					);
+					result.Add(functionResultMessage);
+				}
+			}
+			else
+			{
+				// Handle regular text messages
+				var content = message.Content?.Content?.ToString() ?? string.Empty;
+				var role = DetermineChatRole(senderName);
+
+				result.Add(new Microsoft.Extensions.AI.ChatMessage(role, content));
+			}
 		}
 
 		return result;
