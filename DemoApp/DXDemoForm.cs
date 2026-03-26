@@ -110,5 +110,5 @@ public partial class DXDemoForm : ToolbarForm, IMessageFilter
 		typeLabelControl.Text = control?.GetType().Name ?? "";
 	}
 
-	}
+}
 

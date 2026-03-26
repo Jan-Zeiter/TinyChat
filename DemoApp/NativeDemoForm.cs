@@ -99,5 +99,5 @@ public partial class NativeDemoForm : Form, IMessageFilter
 		typeLabel.Text = control?.GetType().Name ?? "";
 	}
 
-	}
+}
 
