@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace TinyChat;
 
 /// <summary>
@@ -29,6 +31,7 @@ internal sealed partial class FunctionCallMessageControl : Panel, IChatMessageCo
 	/// Starts collapsed.
 	/// </summary>
 	private bool _expanded;
+	private bool _allowFunctionExpanded;
 
 	/// <inheritdoc/>
 	/// <remarks>Tool call messages are never streamed, so this event is intentionally a no-op.</remarks>
@@ -72,6 +75,27 @@ internal sealed partial class FunctionCallMessageControl : Panel, IChatMessageCo
 	/// The message's <see cref="IChatMessage.Content"/> must be a
 	/// <see cref="FunctionCallMessageContent"/> for any content to be rendered.
 	/// </summary>
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	public bool AllowFunctionExpanded
+	{
+		get => _allowFunctionExpanded;
+		set
+		{
+			_allowFunctionExpanded = value;
+			if (_allowFunctionExpanded == true)
+			{
+				tableLayout.Cursor = Cursors.Hand;
+				lblTitle.Cursor = Cursors.Hand;
+				lblIcon.Cursor = Cursors.Hand;
+			}
+			else
+			{
+				tableLayout.Cursor = Cursors.Default;
+				lblTitle.Cursor = Cursors.Default;
+				lblIcon.Cursor = Cursors.Default;
+			}
+		}
+	}
 	[System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)]
 	public IChatMessage? Message
 	{
@@ -129,8 +153,11 @@ internal sealed partial class FunctionCallMessageControl : Panel, IChatMessageCo
 	/// </summary>
 	private void Toggle(object? sender, EventArgs e)
 	{
-		_expanded = !_expanded;
-		ApplyVisibility();
+		if (AllowFunctionExpanded == true)
+		{
+			_expanded = !_expanded;
+			ApplyVisibility();
+		}
 	}
 
 	/// <summary>

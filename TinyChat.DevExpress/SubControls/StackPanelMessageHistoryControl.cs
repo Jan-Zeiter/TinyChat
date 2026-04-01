@@ -1,7 +1,9 @@
 using DevExpress.Utils.Layout;
 using DevExpress.XtraEditors;
+using System.ComponentModel;
 
 namespace TinyChat;
+
 
 /// <summary>
 /// A scrollable control that displays chat message history using a vertical stack panel layout.
@@ -25,7 +27,6 @@ public class StackPanelMessageHistoryControl : XtraScrollableControl, IChatMessa
 	public StackPanelMessageHistoryControl()
 	{
 		AutoScroll = true;
-
 		_stackPanel.LayoutDirection = StackPanelLayoutDirection.TopDown;
 		_stackPanel.AutoSize = true;
 		_stackPanel.Visible = true;

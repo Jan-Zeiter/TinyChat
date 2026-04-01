@@ -94,7 +94,6 @@ public partial class DXDemoForm : ToolbarForm, IMessageFilter
 			{
 			}
 		}
-
 		return false;
 	}
 

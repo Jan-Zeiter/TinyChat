@@ -89,12 +89,12 @@ partial class DXFunctionCallMessageControl
 		tablePanel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
 		tablePanel.Controls.Add(lblToolIcon, 0, 0);
 		tablePanel.Controls.Add(lblTitle, 1, 0);
+
 		// Row 1, col 0 intentionally left empty - no spacer, so the row fully
 		// collapses when _argsLabel is hidden.
 		tablePanel.Controls.Add(lblArguments, 1, 1);
 		tablePanel.Controls.Add(lblResultIcon, 0, 2);
 		tablePanel.Controls.Add(lblResult, 1, 2);
-		tablePanel.Cursor = Cursors.Hand;
 		tablePanel.Dock = DockStyle.Fill;
 		tablePanel.Margin = Padding.Empty;
 		tablePanel.Padding = Padding.Empty;

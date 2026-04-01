@@ -1,3 +1,5 @@
+using System.Reflection.Metadata.Ecma335;
+
 namespace TinyChat;
 
 partial class FunctionCallMessageControl
@@ -51,7 +53,6 @@ partial class FunctionCallMessageControl
 		// lblTitle
 		lblTitle.AutoSize = true;
 		lblTitle.Dock = DockStyle.Fill;
-		lblTitle.Cursor = Cursors.Hand;
 		lblTitle.UseMnemonic = false;
 		lblTitle.TextAlign = ContentAlignment.MiddleLeft;
 
@@ -92,7 +93,7 @@ partial class FunctionCallMessageControl
 		tableLayout.Controls.Add(lblArgs, 1, 1);
 		tableLayout.Controls.Add(lblResultIcon, 0, 2);
 		tableLayout.Controls.Add(lblResult, 1, 2);
-		tableLayout.Cursor = Cursors.Hand;
+		
 		tableLayout.Dock = DockStyle.Fill;
 		tableLayout.Margin = Padding.Empty;
 		tableLayout.Padding = new Padding(8, 0, 0, 0);

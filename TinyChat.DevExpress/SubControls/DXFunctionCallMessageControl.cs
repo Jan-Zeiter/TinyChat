@@ -1,5 +1,7 @@
 using DevExpress.DirectX.Common.Direct2D;
 using DevExpress.XtraEditors;
+using Microsoft.VisualBasic.ApplicationServices;
+using System.ComponentModel;
 
 namespace TinyChat;
 
@@ -40,6 +42,35 @@ internal sealed partial class DXFunctionCallMessageControl : PanelControl, IChat
 	/// Starts collapsed.
 	/// </summary>
 	private bool _expanded;
+	private bool _allowFunctionExpanded;
+
+	/// <summary>
+	/// Whether it is allowed to see a detailed panel 
+	/// </summary>
+	[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+	/// <summary>
+	/// Whether it is allowed to see a detailed panel 
+	/// </summary>
+	public bool AllowFunctionExpanded
+	{
+		get => _allowFunctionExpanded;
+		set
+		{
+			_allowFunctionExpanded = value;
+			if (_allowFunctionExpanded == true)
+			{
+				tablePanel.Cursor = Cursors.Hand;
+				lblTitle.Cursor = Cursors.Hand;
+				lblToolIcon.Cursor = Cursors.Hand;
+			}
+			else
+			{
+				tablePanel.Cursor = Cursors.Default;
+				lblTitle.Cursor = Cursors.Default;
+				lblToolIcon.Cursor = Cursors.Default;
+			}
+		}
+	}
 
 	/// <inheritdoc/>
 	/// <remarks>Tool call messages are never streamed, so this event is intentionally a no-op.</remarks>
@@ -141,10 +172,12 @@ internal sealed partial class DXFunctionCallMessageControl : PanelControl, IChat
 	/// </summary>
 	private void Toggle(object? sender, EventArgs e)
 	{
-		_expanded = !_expanded;
-		ApplyVisibility();
+		if (AllowFunctionExpanded == true)
+		{
+			_expanded = !_expanded;
+			ApplyVisibility();
+		}
 	}
-
 	/// <summary>
 	/// Refreshes both the header and detail labels from the current <see cref="Message"/>.
 	/// Does nothing if <see cref="Message"/> is <see langword="null"/> or its content is not
